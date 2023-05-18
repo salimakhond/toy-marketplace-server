@@ -41,9 +41,12 @@ async function run() {
             res.send(result);
         })
 
-        
+        app.get('/products/:subCategory', async (req, res) => {
+            const cursor = toysCollection.find({ subCategory: req.params.subCategory });
+            const result = await cursor.toArray();
+            res.send(result);
+        })
 
-        // services route
         app.get('/products', async (req, res) => {
             const cursor = toysCollection.find();
             const result = await cursor.toArray();
