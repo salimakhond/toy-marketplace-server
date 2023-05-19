@@ -11,11 +11,6 @@ app.use(cors());
 app.use(express.json());
 
 
-
-
-
-
-
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.5jtl7ky.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -38,6 +33,12 @@ async function run() {
             const products = req.body;
             console.log(products);
             const result = await toysCollection.insertOne(products);
+            res.send(result);
+        })
+
+        app.get('/products', async (req, res) => {
+            const cursor = toysCollection.find();
+            const result = await cursor.toArray();
             res.send(result);
         })
 
@@ -70,17 +71,28 @@ async function run() {
         });
 
 
-        app.put('/product-by-id/:id',async(req,res)=>{
-            const id=req.params.id;
-            console.log(id)
+        app.put('/product-by-id/:id', async (req, res) => {
+            const id = req.params.id;
+            const update = req.body;
+            const query = { _id: new ObjectId(id) };
+            const options = { upsert: true };
+            const updatedToys = {
+                $set: {
+                    toyName: update.toyName,
+                    description: update.description,
+                    image: update.image,
+                    subCategory: update.subCategory,
+                    quantity: update.quantity,
+                    sellername: update.sellername,
+                    rating: update.rating,
+                    postedBy: update.postedBy,
+                    price: update.price
+                }
+            }
+            const result = await toysCollection.updateOne(query, updatedToys, options);
+            res.send(result);
         });
 
-
-        app.get('/products', async (req, res) => {
-            const cursor = toysCollection.find();
-            const result = await cursor.toArray();
-            res.send(result);
-        })
 
 
         // Send a ping to confirm a successful connection
