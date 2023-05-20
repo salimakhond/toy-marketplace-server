@@ -93,6 +93,11 @@ async function run() {
             res.send(result);
         });
 
+        app.get('/search/:text', async (req, res) => {
+            const searchText = req.params.text;
+            const result = await toysCollection.find({ $or: [{ toyName: { $regex: searchText, $options: "i" } }] }).toArray();
+            res.send(result);
+        })
 
 
         // Send a ping to confirm a successful connection
