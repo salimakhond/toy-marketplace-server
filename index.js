@@ -57,11 +57,12 @@ async function run() {
             res.send(result);
         })
 
-        app.get('/product-by-email/:email', async (req, res) => {
+        app.get('/product-by-email/:email/:sort', async (req, res) => {
             console.log(req.params.email);
-            const result = await toysCollection.find({ email: req.params.email }).sort({price: 1}).toArray();
+            const sort = req.params.sort === 'true' ? 1 : -1;
+            const result = await toysCollection.find({ email: req.params.email }).sort({ price: sort }).toArray();
             res.send(result);
-        });
+          });          
 
 
         app.delete('/product-by-email/:id', async (req, res) => {
